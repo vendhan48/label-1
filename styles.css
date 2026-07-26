@@ -92,6 +92,15 @@ button:hover {
   transform: translateY(-1px);
 }
 
+.pdf-btn {
+  background: linear-gradient(90deg, #059669, #10b981);
+  margin-top: 12px;
+}
+
+.pdf-btn:hover {
+  transform: translateY(-1px);
+}
+
 .materials {
   margin-top: 24px;
 }
