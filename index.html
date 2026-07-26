@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Label Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <header class="hero">
+          <p class="eyebrow">Quick estimate tool</p>
+          <h1>Label Calculation Website</h1>
+          <p class="subtitle">
+            Estimate how many labels fit on a sheet, how many sheets you need,
+            and the total material cost.
+          </p>
+        </header>
+
+        <form id="label-form" class="form-grid">
+          <label>
+            <span>Label width (mm)</span>
+            <input type="number" id="width" value="100" min="1" step="0.1" required />
+          </label>
+
+          <label>
+            <span>Label height (mm)</span>
+            <input type="number" id="height" value="50" min="1" step="0.1" required />
+          </label>
+
+          <label>
+            <span>Labels per row</span>
+            <input type="number" id="labelsPerRow" value="4" min="1" step="1" required />
+          </label>
+
+          <label>
+            <span>Rows per sheet</span>
+            <input type="number" id="rowsPerSheet" value="8" min="1" step="1" required />
+          </label>
+
+          <label>
+            <span>Quantity needed</span>
+            <input type="number" id="quantity" value="1000" min="1" step="1" required />
+          </label>
+
+          <label>
+            <span>Cost per sheet ($)</span>
+            <input type="number" id="costPerSheet" value="2.5" min="0" step="0.01" required />
+          </label>
+
+          <label>
+            <span>Waste allowance (%)</span>
+            <input type="number" id="wasteAllowance" value="5" min="0" max="100" step="1" required />
+          </label>
+
+          <button type="submit">Calculate</button>
+        </form>
+
+        <section class="materials" aria-label="materials breakdown">
+          <h2>Materials</h2>
+          <div class="materials-grid">
+            <article class="material-card">
+              <h3>Label stock</h3>
+              <p id="labelStock">0.00 m²</p>
+              <span>Base material for the printed labels</span>
+            </article>
+            <article class="material-card">
+              <h3>Adhesive</h3>
+              <p id="adhesive">0.00 m²</p>
+              <span>Estimated adhesive coverage</span>
+            </article>
+            <article class="material-card">
+              <h3>Release liner</h3>
+              <p id="releaseLiner">0.00 m²</p>
+              <span>Backing material for the labels</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="results" class="results" aria-live="polite">
+          <div class="result-card">
+            <h2>Labels per sheet</h2>
+            <p id="labelsPerSheet">0</p>
+          </div>
+          <div class="result-card">
+            <h2>Sheets needed</h2>
+            <p id="sheetsNeeded">0</p>
+          </div>
+          <div class="result-card">
+            <h2>Material area</h2>
+            <p id="materialArea">0 m²</p>
+          </div>
+          <div class="result-card">
+            <h2>Estimated cost</h2>
+            <p id="estimatedCost">$0.00</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
