@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Label Calculator</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   </head>
   <body>
     <main class="page">
@@ -46,17 +45,48 @@
           </label>
 
           <label>
-            <span>Cost per sheet ($)</span>
+            <span>Cost per sheet (₹)</span>
             <input type="number" id="costPerSheet" value="2.5" min="0" step="0.01" required />
           </label>
 
           <label>
-            <span>Waste allowance (%)</span>
-            <input type="number" id="wasteAllowance" value="5" min="0" max="100" step="1" required />
+            <span>Cylinder size (mm)</span>
+            <input type="number" id="cylinderSize" value="300" min="1" step="1" required />
+          </label>
+
+          <label>
+            <span>Label Material Type</span>
+            <select id="materialType" required>
+              <optgroup label="Paper materials">
+                <option value="White semi-gloss paper, standard adhesive">White semi-gloss paper, standard adhesive</option>
+                <option value="White semi-gloss paper, strong adhesive">White semi-gloss paper, strong adhesive</option>
+                <option value="White semi-gloss paper, standard adhesive (24h)">White semi-gloss paper, standard adhesive (24h)</option>
+              </optgroup>
+              <optgroup label="Foil materials">
+                <option value="White PP foil, standard adhesive">White PP foil, standard adhesive</option>
+                <option value="White PP foil, strong adhesive">White PP foil, strong adhesive</option>
+                <option value="Transparent PP foil, standard adhesive">Transparent PP foil, standard adhesive</option>
+                <option value="White PP foil, standard adhesive (24h)">White PP foil, standard adhesive (24h)</option>
+              </optgroup>
+              <optgroup label="Vinyl materials">
+                <option value="White vinyl, standard adhesive">White vinyl, standard adhesive</option>
+                <option value="White vinyl, strong adhesive">White vinyl, strong adhesive</option>
+                <option value="Transparent vinyl, standard adhesive">Transparent vinyl, standard adhesive</option>
+              </optgroup>
+              <optgroup label="Polyester materials">
+                <option value="White polyester, standard adhesive">White polyester, standard adhesive</option>
+                <option value="White polyester, strong adhesive">White polyester, strong adhesive</option>
+                <option value="Transparent polyester, standard adhesive">Transparent polyester, standard adhesive</option>
+              </optgroup>
+              <optgroup label="Kraft materials">
+                <option value="Natural kraft, standard adhesive">Natural kraft, standard adhesive</option>
+                <option value="Natural kraft, strong adhesive">Natural kraft, strong adhesive</option>
+              </optgroup>
+            </select>
           </label>
 
           <button type="submit">Calculate</button>
-          <button type="button" id="downloadPdf" class="pdf-btn">Download as PDF</button>
+          <button type="button" id="viewReport" class="view-btn">View Report</button>
         </form>
 
         <section class="materials" aria-label="materials breakdown">
@@ -82,6 +112,10 @@
 
         <section id="results" class="results" aria-live="polite">
           <div class="result-card">
+            <h2>Quantity needed</h2>
+            <p id="quantityDisplay">0</p>
+          </div>
+          <div class="result-card">
             <h2>Labels per sheet</h2>
             <p id="labelsPerSheet">0</p>
           </div>
@@ -90,16 +124,37 @@
             <p id="sheetsNeeded">0</p>
           </div>
           <div class="result-card">
+            <h2>Rolls required</h2>
+            <p id="rollsRequired">0</p>
+          </div>
+          <div class="result-card">
             <h2>Material area</h2>
             <p id="materialArea">0 m²</p>
           </div>
           <div class="result-card">
             <h2>Estimated cost</h2>
-            <p id="estimatedCost">$0.00</p>
+            <p id="estimatedCost">₹0.00</p>
           </div>
         </section>
       </section>
     </main>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Label Calculation Report</h2>
+          <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body" id="reportContent">
+          <!-- Report will be inserted here -->
+        </div>
+        <div class="modal-footer">
+          <button onclick="window.print()" class="print-btn">Print Report</button>
+          <button onclick="document.getElementById('reportModal').style.display='none'" class="close-btn">Close</button>
+        </div>
+      </div>
+    </div>
 
     <script src="app.js"></script>
   </body>

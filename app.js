@@ -10,16 +10,20 @@ form.addEventListener('submit', (event) => {
   const rowsPerSheet = Number(document.getElementById('rowsPerSheet').value);
   const quantity = Number(document.getElementById('quantity').value);
   const costPerSheet = Number(document.getElementById('costPerSheet').value);
-  const wasteAllowance = Number(document.getElementById('wasteAllowance').value);
+  const cylinderSize = Number(document.getElementById('cylinderSize').value);
+  const materialType = document.getElementById('materialType').value;
 
   const labelsPerSheet = labelsPerRow * rowsPerSheet;
   const sheetsNeeded = Math.ceil(quantity / labelsPerSheet);
   const materialAreaM2 = (quantity * width * height) / 1000000;
-  const materialBuffer = 1 + wasteAllowance / 100;
   const estimatedCost = sheetsNeeded * costPerSheet;
-  const labelStockM2 = materialAreaM2 * materialBuffer;
-  const adhesiveM2 = materialAreaM2 * materialBuffer;
-  const releaseLinerM2 = materialAreaM2 * materialBuffer;
+  const labelStockM2 = materialAreaM2;
+  const adhesiveM2 = materialAreaM2;
+  const releaseLinerM2 = materialAreaM2;
+  
+  // Calculate rolls required based on cylinder size and label height
+  const labelsPerRoll = Math.floor(cylinderSize / height);
+  const rollsRequired = Math.ceil(quantity / labelsPerRoll);
 
   // Store calculation data for PDF download
   lastCalculationData = {
@@ -29,127 +33,84 @@ form.addEventListener('submit', (event) => {
     rowsPerSheet,
     quantity,
     costPerSheet,
-    wasteAllowance,
+    cylinderSize,
+    materialType,
     labelsPerSheet,
     sheetsNeeded,
     materialAreaM2,
     labelStockM2,
     adhesiveM2,
     releaseLinerM2,
-    estimatedCost
+    estimatedCost,
+    rollsRequired,
+    labelsPerRoll
   };
 
+  document.getElementById('quantityDisplay').textContent = quantity.toLocaleString();
   document.getElementById('labelsPerSheet').textContent = labelsPerSheet.toLocaleString();
   document.getElementById('sheetsNeeded').textContent = sheetsNeeded.toLocaleString();
+  document.getElementById('rollsRequired').textContent = rollsRequired.toLocaleString();
   document.getElementById('materialArea').textContent = `${materialAreaM2.toFixed(2)} m²`;
-  document.getElementById('estimatedCost').textContent = `$${estimatedCost.toFixed(2)}`;
+  document.getElementById('estimatedCost').textContent = `₹${estimatedCost.toFixed(2)}`;
   document.getElementById('labelStock').textContent = `${labelStockM2.toFixed(2)} m²`;
   document.getElementById('adhesive').textContent = `${adhesiveM2.toFixed(2)} m²`;
   document.getElementById('releaseLiner').textContent = `${releaseLinerM2.toFixed(2)} m²`;
 });
 
-// PDF Download Handler
-document.getElementById('downloadPdf').addEventListener('click', () => {
+// View Report Handler - Display Modal
+document.getElementById('viewReport').addEventListener('click', () => {
   if (!lastCalculationData) {
-    alert('Please calculate first before downloading PDF');
+    alert('Please calculate first before viewing report');
     return;
   }
 
   const data = lastCalculationData;
-  const html = `
-    <div style="font-family: Arial, sans-serif; padding: 20px;">
-      <h1 style="text-align: center; color: #2563eb;">Label Calculation Report</h1>
-      <hr style="border: 1px solid #ccc;">
-      
-      <h2>Input Parameters</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Label Width</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.width} mm</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Label Height</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.height} mm</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Labels Per Row</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.labelsPerRow}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Rows Per Sheet</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.rowsPerSheet}</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Quantity Needed</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.quantity.toLocaleString()}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Cost Per Sheet</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">$${data.costPerSheet.toFixed(2)}</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Waste Allowance</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.wasteAllowance}%</td>
-        </tr>
-      </table>
-      
-      <h2 style="margin-top: 20px;">Calculation Results</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tr style="background-color: #2563eb; color: white;">
-          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Metric</td>
-          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Value</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Labels Per Sheet</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.labelsPerSheet.toLocaleString()}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sheets Needed</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.sheetsNeeded.toLocaleString()}</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Material Area</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.materialAreaM2.toFixed(2)} m²</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Estimated Cost</td>
-          <td style="padding: 8px; border: 1px solid #ddd; color: #2563eb; font-weight: bold; font-size: 16px;">$${data.estimatedCost.toFixed(2)}</td>
-        </tr>
-      </table>
-      
-      <h2 style="margin-top: 20px;">Materials Breakdown</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Label Stock</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.labelStockM2.toFixed(2)} m²</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Adhesive</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.adhesiveM2.toFixed(2)} m²</td>
-        </tr>
-        <tr style="background-color: #f0f0f0;">
-          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Release Liner</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${data.releaseLinerM2.toFixed(2)} m²</td>
-        </tr>
-      </table>
-      
-      <hr style="border: 1px solid #ccc; margin-top: 20px;">
-      <p style="text-align: center; color: #666; font-size: 12px;">
-        Generated on ${new Date().toLocaleString()}
-      </p>
-    </div>
+  const reportHTML = `
+    <h3>Input Parameters</h3>
+    <table>
+      <tr><td style="font-weight: bold;">Label Width</td><td>${data.width} mm</td></tr>
+      <tr><td style="font-weight: bold;">Label Height</td><td>${data.height} mm</td></tr>
+      <tr><td style="font-weight: bold;">Labels Per Row</td><td>${data.labelsPerRow}</td></tr>
+      <tr><td style="font-weight: bold;">Rows Per Sheet</td><td>${data.rowsPerSheet}</td></tr>
+      <tr><td style="font-weight: bold;">Quantity Needed</td><td>${data.quantity.toLocaleString()}</td></tr>
+      <tr><td style="font-weight: bold;">Cost Per Sheet</td><td>₹${data.costPerSheet.toFixed(2)}</td></tr>
+      <tr><td style="font-weight: bold;">Cylinder Size</td><td>${data.cylinderSize} mm</td></tr>
+      <tr><td style="font-weight: bold;">Material Type</td><td>${data.materialType}</td></tr>
+    </table>
+    
+    <h3>Calculation Results</h3>
+    <table>
+      <tr><td style="font-weight: bold;">Quantity Needed</td><td>${data.quantity.toLocaleString()}</td></tr>
+      <tr><td style="font-weight: bold;">Labels Per Sheet</td><td>${data.labelsPerSheet.toLocaleString()}</td></tr>
+      <tr><td style="font-weight: bold;">Sheets Needed</td><td>${data.sheetsNeeded.toLocaleString()}</td></tr>
+      <tr><td style="font-weight: bold;">Rolls Required</td><td>${data.rollsRequired.toLocaleString()}</td></tr>
+      <tr><td style="font-weight: bold;">Material Area</td><td>${data.materialAreaM2.toFixed(2)} m²</td></tr>
+      <tr><td style="font-weight: bold; color: #3b82f6;">Estimated Cost</td><td style="color: #3b82f6; font-weight: bold; font-size: 18px;">₹${data.estimatedCost.toFixed(2)}</td></tr>
+    </table>
+    
+    <h3>Materials Breakdown</h3>
+    <table>
+      <tr><td style="font-weight: bold;">Label Stock</td><td>${data.labelStockM2.toFixed(2)} m²</td></tr>
+      <tr><td style="font-weight: bold;">Adhesive</td><td>${data.adhesiveM2.toFixed(2)} m²</td></tr>
+      <tr><td style="font-weight: bold;">Release Liner</td><td>${data.releaseLinerM2.toFixed(2)} m²</td></tr>
+    </table>
+    
+    <p style="text-align: center; color: #a0a0a0; font-size: 0.9rem; margin-top: 24px;">Generated on ${new Date().toLocaleString()}</p>
   `;
 
-  const element = document.createElement('div');
-  element.innerHTML = html;
-  
-  const opt = {
-    margin: 10,
-    filename: 'label-calculation-report.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-  };
+  document.getElementById('reportContent').innerHTML = reportHTML;
+  document.getElementById('reportModal').style.display = 'block';
+});
 
-  html2pdf().set(opt).from(element).save();
+// Close modal when X button is clicked
+document.getElementById('closeModal').addEventListener('click', () => {
+  document.getElementById('reportModal').style.display = 'none';
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', (event) => {
+  const modal = document.getElementById('reportModal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
 });
